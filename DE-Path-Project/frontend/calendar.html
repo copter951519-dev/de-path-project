@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DE-PATH | TCAS Smart Calendar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --accent-red: #ff4d4d;
+            --bg-dark: #080808;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-dim: #888;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Kanit', sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        .calendar-container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.6rem;
+            color: var(--accent-red);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.02);
+            padding: 20px;
+            border-radius: 18px;
+        }
+
+        .select-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .select-group label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        select {
+            background: #121212;
+            color: white;
+            border: 1px solid var(--glass-border);
+            padding: 10px 15px;
+            border-radius: 12px;
+            outline: none;
+            cursor: pointer;
+            font-family: 'Kanit';
+            transition: 0.3s;
+        }
+
+        select:focus { border-color: var(--accent-red); }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .cal-header {
+            text-align: center;
+            font-weight: 700;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            padding: 10px 0;
+            text-transform: uppercase;
+        }
+
+        .cal-day {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            min-height: 100px;
+            padding: 10px;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .cal-day:hover {
+            background: rgba(255,255,255,0.04);
+            border-color: var(--accent-red);
+        }
+
+        .cal-day.empty { border: none; background: none; }
+
+        .day-num {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: bold;
+        }
+
+        .cal-day:hover .day-num { color: var(--accent-red); }
+
+        .event-tag {
+            background: linear-gradient(45deg, var(--accent-red), #ff7676);
+            color: white;
+            font-size: 0.65rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-top: 6px;
+            display: block;
+            line-height: 1.2;
+            box-shadow: 0 4px 12px rgba(255,77,77,0.15);
+        }
+
+        .event-time {
+            font-weight: 800;
+            display: block;
+            font-size: 0.55rem;
+            margin-bottom: 1px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calendar-container">
+        <h2><i class="fas fa-bullseye"></i> TCAS TIMELINE EXPLORER</h2>
+        
+        <div class="controls">
+            <div class="select-group">
+                <label>Academic Year</label>
+                <select id="sel-year" onchange="renderCalendar()">
+                    <option value="2025">Dek 68</option>
+                    <option value="2026" selected>Dek 69</option>
+                    <option value="2027">Dek 70</option>
+                </select>
+            </div>
+
+            <div class="select-group">
+                <label>Month</label>
+                <select id="sel-month" onchange="renderCalendar()">
+                    <option value="0">มกราคม</option>
+                    <option value="1">กุมภาพันธ์</option>
+                    <option value="2">มีนาคม</option>
+                    <option value="3">เมษายน</option>
+                    <option value="4" selected>พฤษภาคม (Admission)</option>
+                    <option value="5">มิถุนายน</option>
+                    <option value="6">กรกฎาคม</option>
+                    <option value="7">สิงหาคม</option>
+                    <option value="8">กันยายน</option>
+                    <option value="9">ตุลาคม (Portfolio)</option>
+                    <option value="10">พฤศจิกายน</option>
+                    <option value="11">ธันวาคม (TGAT/TPAT)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="calendar-render-area"></div>
+    </div>
+
+    <script>
+        // ข้อมูลกิจกรรม TCAS69 (ปรับตามเดือน 0-11 ของ JS)
+        const tcasEvents = {
+            "2026-4": [
+                { day: 6, time: "09:00", title: "ประกาศผล Admission 1" },
+                { day: 12, time: "23:59", title: "ยืนยันสิทธิ์ในระบบ" },
+                { day: 20, time: "09:00", title: "ประกาศผล Admission 2" }
+            ],
+            "2026-11": [
+                { day: 10, time: "08:30", title: "สอบ TGAT/TPAT" },
+                { day: 15, time: "16:00", title: "ประกาศผลสอบ" }
+            ]
+        };
+
+        function renderCalendar() {
+            const year = parseInt(document.getElementById('sel-year').value);
+            const month = parseInt(document.getElementById('sel-month').value);
+            const container = document.getElementById('calendar-render-area');
+            const key = `${year}-${month}`;
+            
+            // หาข้อมูลวัน
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const days = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
+            let html = `<div class="calendar-grid">`;
+            
+            days.forEach(d => html += `<div class="cal-header">${d}</div>`);
+
+            // ช่องว่างก่อนเริ่มวันที่ 1
+            for (let i = 0; i < firstDay; i++) {
+                html += `<div class="cal-day empty"></div>`;
+            }
+
+            // วนลูปสร้างวันจริง
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayEvents = (tcasEvents[key] || []).filter(e => e.day === d);
+                html += `
+                    <div class="cal-day">
+                        <span class="day-num">${d}</span>
+                        ${dayEvents.map(e => `
+                            <span class="event-tag">
+                                <span class="event-time">${e.time}</span>
+                                ${e.title}
+                            </span>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        renderCalendar();
+    </script>
+</body>
+</html>

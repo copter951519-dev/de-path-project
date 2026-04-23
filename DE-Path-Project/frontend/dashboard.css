@@ -1,0 +1,180 @@
+/* =========================================
+   1. CORE VARIABLES (RED BLUEPRINT THEME)
+   ========================================= */
+:root {
+    --primary-red: #cc0000;
+    --dark-red: #4d0000;
+    --bg-dark: #0a0a0a;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --text-white: #ffffff;
+    --text-dim: rgba(255, 255, 255, 0.5);
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Ranking Colors */
+    --gold: #ffd700;
+    --silver: #c0c0c0;
+    --bronze: #cd7f32;
+}
+
+/* Base Reset */
+* { 
+    margin: 0; padding: 0; box-sizing: border-box; 
+    font-family: 'Kanit', sans-serif; 
+}
+
+body {
+    width: 100%; height: 100vh;
+    overflow: hidden;
+    background: var(--bg-dark);
+    color: var(--text-white);
+    display: flex;
+    padding: 15px;
+    gap: 15px;
+}
+
+/* Background Blueprint */
+.main-split-bg { ... } /* Content omitted for brevity */
+
+/* =========================================
+   2. SIDEBAR SYSTEM (MINI & MAIN)
+   ========================================= */
+.sidebar-glass { ... } /* Content omitted for brevity */
+
+/* =========================================
+   3. CONTENT AREA & GRID
+   ========================================= */
+.content-glass { ... } /* Content omitted for brevity */
+
+/* analytics.css - COMPACT & ORGANIZED VERSION */
+.analytics-grid { ... } /* Content omitted for brevity */
+
+/* =========================================
+   4. RANKING/LEADERBOARD PAGE STYLES
+   ========================================= */
+.ranking-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.input-card, .leaderboard-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 25px;
+}
+
+.input-card h3, .leaderboard-card h3 {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    opacity: 0.8;
+    color: var(--primary-red);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-group {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 15px;
+}
+
+.input-group input {
+    background: #121212;
+    color: white;
+    border: 1px solid var(--glass-border);
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-family: 'Kanit';
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--primary-red);
+}
+
+.btn-add {
+    background: var(--text-white);
+    color: black;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+
+.btn-add:hover {
+    background: var(--primary-red);
+    color: white;
+}
+
+.rank-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255,255,255,0.01);
+    padding: 15px 20px;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    margin-bottom: 10px;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rank-item:hover {
+    border-color: var(--primary-red);
+    background: rgba(204, 0, 0, 0.05);
+    transform: scale(1.01);
+}
+
+.rank-num {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-dim);
+    width: 40px;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 1rem;
+    display: block;
+    color: var(--text-white);
+}
+
+.user-score {
+    font-size: 0.8rem;
+    color: var(--primary-red);
+    font-weight: bold;
+}
+
+.btn-del {
+    background: none;
+    border: none;
+    color: #444;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 1rem;
+}
+
+.btn-del:hover {
+    color: var(--primary-red);
+}
+
+/* Top 3 Highlighting */
+.rank-item:nth-child(1) { border-color: var(--gold); background: rgba(255, 215, 0, 0.05); }
+.rank-item:nth-child(1) .rank-num { color: var(--gold); }
+
+.rank-item:nth-child(2) { border-color: var(--silver); background: rgba(192, 192, 192, 0.05); }
+.rank-item:nth-child(2) .rank-num { color: var(--silver); }
+
+.rank-item:nth-child(3) { border-color: var(--bronze); background: rgba(205, 127, 50, 0.05); }
+.rank-item:nth-child(3) .rank-num { color: var(--bronze); }

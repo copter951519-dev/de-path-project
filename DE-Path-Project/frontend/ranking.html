@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ========== SEO & SOCIAL META TAGS ========== -->
+    <title>DE-PATH | Leaderboard จัดอันดับคะแนนสอบวิศวะ</title>
+    <meta name="description" content="ดูและจำลองอันดับคะแนนของคุณเทียบกับผู้ใช้งานคนอื่นๆ บน Leaderboard ของ DE-PATH เพื่อประเมินความพร้อมในการสอบเข้าคณะวิศวกรรมศาสตร์">
+    <meta name="keywords" content="จัดอันดับคะแนน, leaderboard, tpat3, a-level, netsat, เตรียมสอบวิศวะ, de-path, dek68, tcas">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-deploy-url.com/ranking.html"> <!-- TODO: แก้ไขเป็น URL จริงของเว็บคุณ -->
+    <meta property="og:title" content="DE-PATH | Leaderboard จัดอันดับคะแนนสอบวิศวะ">
+    <meta property="og:description" content="ดูและจำลองอันดับคะแนนของคุณเทียบกับผู้ใช้งานคนอื่นๆ บน Leaderboard ของ DE-PATH เพื่อประเมินความพร้อมในการสอบเข้าคณะวิศวกรรมศาสตร์">
+    <meta property="og:image" content="https://your-deploy-url.com/og-image-ranking.png"> <!-- TODO: แก้ไขเป็น URL รูปภาพตัวอย่างของหน้านี้ -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://your-deploy-url.com/ranking.html"> <!-- TODO: แก้ไขเป็น URL จริงของเว็บคุณ -->
+    <meta property="twitter:title" content="DE-PATH | Leaderboard จัดอันดับคะแนนสอบวิศวะ">
+    <meta property="twitter:description" content="ดูและจำลองอันดับคะแนนของคุณเทียบกับผู้ใช้งานคนอื่นๆ บน Leaderboard ของ DE-PATH เพื่อประเมินความพร้อมในการสอบเข้าคณะวิศวกรรมศาสตร์">
+    <meta property="twitter:image" content="https://your-deploy-url.com/og-image-ranking.png"> <!-- TODO: แก้ไขเป็น URL รูปภาพตัวอย่างของหน้านี้ -->
+
+    <link rel="stylesheet" href="./dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+    <div class="main-split-bg"></div>
+
+    <aside class="sidebar-glass" id="sidebar">
+        <!-- Sidebar content copied from home.html for consistency -->
+        <div style="display:flex; justify-content:space-between; margin-bottom:30px; align-items:center;">
+            <span style="letter-spacing:2px; font-weight:bold; color:var(--primary-red);">DE-PATH</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-label">MAIN HUB</div>
+            <a href="home.html" class="nav-item">🏠 Dashboard</a>
+            <a href="analytics.html" class="nav-item">📊 Analytics</a>
+
+            <div class="nav-group-label">EXAMINATION</div>
+            <a href="exam.html" class="nav-item">📝 ทำข้อสอบออนไลน์</a>
+            <a href="calculator.html" class="nav-item">🧮 ระบบคิดคะแนน %</a>
+            <a href="ranking.html" class="nav-item active">🏆 จำลองอันดับ (Ranking)</a>
+
+            <div class="nav-group-label">RESOURCES</div>
+            <a href="resources.html" class="nav-item">🏛️ คณะวิศวกรรมศาสตร์</a> 
+            <a href="resources.html" class="nav-item">🎓 ข้อมูลมหาวิทยาลัย</a>
+            <a href="calendar.html" class="nav-item">📅 ปฏิทินสอบ (TCAS)</a>
+        </nav>
+    </aside>
+
+    <main class="content-glass">
+        <header style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; margin-bottom: 25px;">
+            <h1 style="letter-spacing: 2px; margin:0;">RANKING LEADERBOARD</h1>
+            <p style="font-size:0.7rem; opacity:0.5; margin-top:5px;">จำลองและเปรียบเทียบคะแนนของคุณกับผู้ใช้งานคนอื่น</p>
+        </header>
+
+        <div class="ranking-grid">
+            <div class="input-card">
+                <h3><i class="fas fa-user-plus"></i> ADD YOUR SCORE</h3>
+                <div class="input-group">
+                    <input type="text" id="user-name" placeholder="ชื่อผู้ใช้งาน (Username)">
+                    <input type="number" id="user-points" placeholder="คะแนนรวมของคุณ">
+                    <button class="btn-add" onclick="addUser()">เพิ่มอันดับ</button>
+                </div>
+            </div>
+
+            <div class="leaderboard-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3><i class="fas fa-crown"></i> TOP 10 RANKING</h3>
+                    <span id="user-count" style="background:rgba(255,77,77,0.1); padding:8px 18px; border-radius:12px; font-weight:800; color:var(--primary-red); border:1px solid var(--glass-border);">0 / 10</span>
+                </div>
+                
+                <div id="rank-list-display">
+                    <!-- User items will be rendered here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+<script>
+    let userRanks = [];
+
+    function addUser() {
+        const nameInput = document.getElementById('user-name');
+        const pointsInput = document.getElementById('user-points');
+        
+        const name = nameInput.value.trim();
+        const points = parseFloat(pointsInput.value);
+
+        if (!name || isNaN(points)) {
+            alert("กรุณากรอกชื่อและคะแนนให้ครบถ้วน");
+            return;
+        }
+
+        userRanks.push({ name, points });
+        userRanks.sort((a, b) => b.points - a.points);
+        if (userRanks.length > 10) {
+            userRanks = userRanks.slice(0, 10);
+        }
+
+        nameInput.value = '';
+        pointsInput.value = '';
+        
+        renderUsers();
+    }
+
+    function removeUser(index) {
+        userRanks.splice(index, 1);
+        renderUsers();
+    }
+
+    function renderUsers() {
+        const container = document.getElementById('rank-list-display');
+        document.getElementById('user-count').innerText = `${userRanks.length} / 10`;
+        
+        if (userRanks.length === 0) {
+            container.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:40px; border:1px dashed var(--glass-border); border-radius:20px;">ยังไม่มีรายชื่อผู้ใช้งานในขณะนี้...</p>`;
+            return;
+        }
+
+        container.innerHTML = userRanks.map((user, i) => `
+            <div class="rank-item">
+                <div class="rank-num">#${i + 1}</div>
+                <div class="user-info">
+                    <span class="user-name">${user.name}</span>
+                    <span class="user-score">${user.points.toLocaleString()} POINTS</span>
+                </div>
+                <button class="btn-del" onclick="removeUser(${i})"><i class="fas fa-times"></i></button>
+            </div>
+        `).join('');
+    }
+
+    // Initial render on page load
+    renderUsers();
+</script>
+
+</body>
+</html>
