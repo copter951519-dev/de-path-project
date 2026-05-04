@@ -3,14 +3,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "../backend/server.mjs"
-    },
-    {
-      "handle": "filesystem"
+      "dest": "DE-Path/backend/server.mjs"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "DE-Path/frontend/$1"
     }
   ]
 }
