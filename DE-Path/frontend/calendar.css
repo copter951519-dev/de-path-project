@@ -1,0 +1,119 @@
+/* Timeline Container */
+.timeline-container {
+    position: relative;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px 0;
+}
+
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-glass);
+    transform: translateX(-50%);
+}
+
+/* Timeline Item */
+.timeline-item {
+    padding: 10px 40px;
+    position: relative;
+    margin: 10px 0;
+    width: 50%;
+}
+
+/* Position items on left/right */
+.timeline-item:nth-child(odd) {
+    left: 0;
+}
+
+.timeline-item:nth-child(even) {
+    left: 50%;
+}
+
+/* Timeline Icon */
+.timeline-icon {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    top: 25px;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: white;
+    border: 3px solid var(--bg-glass-heavy);
+}
+
+.timeline-item:nth-child(odd) .timeline-icon {
+    right: -25px;
+    transform: translateX(50%);
+}
+
+.timeline-item:nth-child(even) .timeline-icon {
+    left: -25px;
+    transform: translateX(-50%);
+}
+
+/* Icon Colors */
+.timeline-icon.tgat { background-color: #FF6384; }
+.timeline-icon.alevel { background-color: #36A2EB; }
+.timeline-icon.exam-day { background-color: #FFCE56; }
+.timeline-icon.admission { background-color: #4BC0C0; }
+
+
+/* Timeline Content */
+.timeline-content {
+    padding: 20px 30px;
+    background: var(--bg-glass-heavy);
+    position: relative;
+    border-radius: 10px;
+    border: 1px solid var(--border-glass);
+}
+
+.timeline-item:nth-child(odd) .timeline-content {
+    text-align: right;
+}
+
+.timeline-content h2 {
+    margin-top: 0;
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+.timeline-content p {
+    margin-bottom: 10px;
+    color: var(--text-light-accent);
+}
+
+.timeline-date {
+    font-weight: 500;
+    color: var(--accent-vermilion);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .timeline-container::before {
+        left: 25px;
+    }
+    
+    .timeline-item, .timeline-item:nth-child(even) {
+        width: 100%;
+        left: 0;
+        padding-left: 70px;
+        padding-right: 25px;
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content {
+        text-align: left;
+    }
+
+    .timeline-icon, .timeline-item:nth-child(even) .timeline-icon {
+        left: 0;
+    }
+}

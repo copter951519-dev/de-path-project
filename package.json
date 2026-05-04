@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node DE-Path/backend/server.mjs"
   },
   "author": "Google LLC",
   "license": "Apache-2.0",

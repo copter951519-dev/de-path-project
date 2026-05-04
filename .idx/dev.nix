@@ -17,9 +17,9 @@
     enable = true; 
     previews = {
       web = {
-        # ย้ายมาใช้เลขพอร์ต 9001 และสั่งให้มันทำงานอัตโนมัติ
-        command = [ "node" "DE-Path-Project/backend/server.mjs" ];
+        command = [ "node" "DE-Path/backend/server.mjs" ];
         manager = "web";
+        env = { PORT = "3000"; };
       };
     };
   };
