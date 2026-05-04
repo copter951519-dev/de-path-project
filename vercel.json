@@ -1,20 +1,7 @@
 {
   "version": 2,
-  "buildCommand": null,
   "outputDirectory": "DE-Path/frontend",
-  "functions": {
-    "DE-Path/backend/server.mjs": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "DE-Path/backend/server.mjs"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
   ]
 }
