@@ -93,7 +93,7 @@
         // NEW: This function calls the Google AI SDK directly
         async function generateExam(topic) {
             try {
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-preview-0514"});
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
                 const prompt = `สร้างข้อสอบปรนัย 4 ตัวเลือก จำนวน 5 ข้อ สำหรับการสอบเข้ามหาวิทยาลัยในประเทศไทยในหัวข้อ "${topic.title}" (${topic.ai_summary}) โดยเน้นคำถามที่ต้องใช้การวิเคราะห์ ไม่ใช่แค่การท่องจำ และต้องตอบกลับมาในรูปแบบ JSON structure เท่านั้น ตามรูปแบบนี้:
                 {
                   "questions": [
