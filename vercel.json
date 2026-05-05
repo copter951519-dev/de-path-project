@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "DE-Path/backend/server.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "DE-Path/frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "DE-Path/backend/server.mjs"
+    },
+    {
+      "src": "/",
+      "dest": "DE-Path/frontend/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "DE-Path/frontend/$1"
+    }
+  ]
+}
