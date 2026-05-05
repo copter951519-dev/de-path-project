@@ -1,0 +1,138 @@
+:root {
+    --primary-red: #FF4500; /* Vermilion Orange */
+    --dark-red: #B33000; /* Darker orange */
+    --glass-bg: rgba(30, 30, 33, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --text-white: #F4F4F5;
+    --text-dim: rgba(244, 244, 245, 0.7);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+
+body {
+    width: 100%; height: 100vh; overflow: hidden;
+    background: #1A1A1A; /* Match home page bg */
+    display: flex;
+    justify-content: center; align-items: center;
+}
+
+.main-split-bg {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    /* Changed to orange tone */
+    background: linear-gradient(45deg, #1a1a1a 50%, #4d1a00 50%);
+    z-index: -2;
+}
+
+.main-split-bg::before {
+    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 40px 40px; pointer-events: none;
+}
+
+.big-circle-frame {
+    width: 88vh; height: 88vh; border-radius: 50%;
+    border: 20px solid rgba(255, 255, 255, 0.03);
+    outline: 2px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 100px rgba(0,0,0,0.6), inset 0 0 50px rgba(0,0,0,0.4);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 10; animation: subtlePulse 4s infinite ease-in-out;
+}
+
+@keyframes subtlePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.01); } }
+
+.content-wrapper {
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%; max-width: 440px; text-align: center; z-index: 20;
+}
+
+.title-box {
+    background: var(--glass-bg); padding: 45px 40px; border-radius: 30px;
+    border: 1px solid var(--glass-border);
+    /* Changed to orange */
+    border-left: 12px solid var(--primary-red);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    margin-bottom: 35px; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+}
+
+h1 {
+    color: var(--text-white);
+    font-size: 4.5rem;
+    letter-spacing: 12px;
+    line-height: 1;
+    margin-bottom: 8px;
+    /* Changed to orange glow */
+    text-shadow: 0 0 20px rgba(255, 69, 0, 0.4);
+}
+.quote {
+    color: var(--primary-red);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 5px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+.input-group { display: flex; flex-direction: column; gap: 15px; width: 100%; margin-bottom: 30px; }
+.input-field {
+    width: 100%;
+    padding: 18px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 0.95rem;
+    text-align: center;
+    outline: none;
+    transition: 0.3s;
+}
+.input-field:focus {
+    border-color: var(--primary-red);
+    /* Changed to orange glow */
+    background: rgba(255, 69, 0, 0.05);
+    box-shadow: 0 0 15px rgba(255, 69, 0, 0.3);
+}
+
+.button-group { display: flex; gap: 25px; align-items: center; justify-content: center; }
+.btn-primary {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    /* Changed to orange gradient */
+    background: linear-gradient(135deg, var(--dark-red) 0%, var(--primary-red) 100%);
+    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    font-size: 1.6rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Changed to orange shadow */
+    box-shadow: 0 10px 25px rgba(255, 69, 0, 0.4);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.btn-primary:hover {
+    transform: translateY(-10px) scale(1.15) rotate(360deg);
+    /* Changed to orange shadow */
+    box-shadow: 0 20px 40px var(--primary-red);
+}
+
+.btn-google {
+    background: #ffffff;
+    color: #000;
+    border: none;
+    padding: 16px 35px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+.btn-google:hover { transform: translateY(-6px); box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2); }
+
+.footer-link { margin-top: 30px; font-size: 0.85rem; color: var(--text-dim); }
+.footer-link span { color: var(--primary-red); cursor: pointer; font-weight: 600; }

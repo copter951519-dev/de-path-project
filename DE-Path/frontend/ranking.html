@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DE-PATH | จำลองอันดับ</title>
+    <meta name="description" content="ดูอันดับคะแนนของคุณเทียบกับผู้ใช้งานคนอื่นๆ ในระบบ">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link rel="stylesheet" href="hometheme.css">
+    <link rel="stylesheet" href="ranking.css">
+
+</head>
+<body>
+    <div class="main-split-bg"></div>
+
+    <aside class="sidebar-glass" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo">DE-PATH</span>
+            <i class="fas fa-bars" id="sidebar-toggle"></i>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-label">หน้าหลัก</div>
+            <a href="home.html" class="nav-item"><i class="fas fa-user-chart"></i><span class="nav-text">ภาพรวมทักษะ</span></a>
+            <a href="analytics.html" class="nav-item"><i class="fas fa-chart-pie"></i><span class="nav-text">สรุปคะแนน</span></a>
+
+            <div class="nav-group-label">ห้องสอบ</div>
+            <a href="exam.html" class="nav-item"><i class="fas fa-pencil-alt"></i><span class="nav-text">ทำข้อสอบ</span></a>
+            <a href="calculator.html" class="nav-item"><i class="fas fa-calculator"></i><span class="nav-text">คิดคะแนน %</span></a>
+            <a href="ranking.html" class="nav-item active"><i class="fas fa-trophy"></i><span class="nav-text">จำลองอันดับ</span></a>
+
+            <div class="nav-group-label">แหล่งข้อมูล</div>
+            <a href="resources.html" class="nav-item"><i class="fas fa-university"></i><span class="nav-text">คณะวิศวะฯ</span></a>
+            <a href="calendar.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span class="nav-text">ปฏิทินสอบ</span></a>
+        </nav>
+    </aside>
+
+    <main class="content-glass" id="ranking-content">
+        <header class="page-header">
+            <div class="header-title">
+                <h1>ตารางอันดับ (Leaderboard)</h1>
+                <p>ดู 10 อันดับผู้ใช้ที่มีคะแนนรวมสูงสุดในระบบ</p>
+            </div>
+        </header>
+
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">
+                <div class="rank">อันดับ</div>
+                <div class="user">ผู้ใช้งาน</div>
+                <div class="score">คะแนนรวม</div>
+            </div>
+            <div class="leaderboard-body" id="leaderboard-body">
+                <!-- Real-time data will be populated here by JS -->
+                <div class="loading-placeholder">
+                    <i class="fas fa-spinner fa-spin"></i> กำลังโหลดข้อมูลอันดับ...
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        // --- Firebase SDK ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { firebaseConfig } from './firebase-config.js';
+
+        // --- App Initialization ---
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- Sidebar Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+            if (sidebar && toggleBtn) {
+                const toggleSidebar = () => {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                };
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+                toggleBtn.addEventListener('click', toggleSidebar);
+            }
+        });
+
+        // --- Leaderboard Logic ---
+        const leaderboardBody = document.getElementById('leaderboard-body');
+
+        // Query for top 10 users by totalScore
+        const usersRef = collection(db, "users"); 
+        const q = query(usersRef, orderBy("totalScore", "desc"), limit(10));
+
+        onSnapshot(q, (querySnapshot) => {
+            leaderboardBody.innerHTML = ''; // Clear existing list
+            if(querySnapshot.empty) {
+                leaderboardBody.innerHTML = `<div class="info-placeholder">ยังไม่มีข้อมูลผู้ใช้งานในระบบ</div>`;
+                return;
+            }
+
+            let rank = 1;
+            querySnapshot.forEach((doc) => {
+                const user = doc.data();
+                const userElement = document.createElement('div');
+                userElement.classList.add('leaderboard-row');
+                
+                // Add special styling for top 3
+                if(rank <= 3) {
+                    userElement.classList.add(`top-${rank}`);
+                }
+
+                userElement.innerHTML = `
+                    <div class="rank">${getRankIcon(rank)}</div>
+                    <div class="user">
+                        <img src="${user.photoURL || 'https://t.ly/lG1aD'}" alt="Avatar">
+                        <span>${user.displayName || 'Anonymous'}</span>
+                    </div>
+                    <div class="score">${user.totalScore ? user.totalScore.toFixed(2) : 'N/A'}</div>
+                `;
+                leaderboardBody.appendChild(userElement);
+                rank++;
+            });
+        });
+
+        function getRankIcon(rank) {
+            if (rank === 1) return '<i class="fas fa-trophy gold"></i>';
+            if (rank === 2) return '<i class="fas fa-trophy silver"></i>';
+            if (rank === 3) return '<i class="fas fa-trophy bronze"></i>';
+            return rank;
+        }
+
+    </script>
+</body>
+</html>

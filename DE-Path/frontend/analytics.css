@@ -1,0 +1,39 @@
+/* Analytics Grid Layout */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 25px;
+    padding-top: 25px;
+}
+
+/* Chart Card Styling */
+.chart-card-glass {
+    background: var(--bg-glass-heavy);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.chart-card-glass h3 {
+    color: var(--text-light);
+    margin-bottom: 20px;
+    font-weight: 400;
+    text-align: center;
+    opacity: 0.9;
+}
+
+/* Chart Container - Fixed Height */
+.chart-container {
+    position: relative;
+    height: 350px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
