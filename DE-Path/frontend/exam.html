@@ -60,10 +60,10 @@
     </script>
 
     <script type="module">
-        // CORRECTED: Import shared instances from config
+        // CORRECTED: Import only necessary firebase auth modules
         import { app, auth } from './firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getVertexAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-vertexai-web.js";
+        // REMOVED: Vertex AI import
 
         const EXAM_STRUCTURE = {
             "TPAT3": { title: "TPAT 3", topics: [ { id: "tpat3-drawing", title: "มิติสัมพันธ์และการเขียนแบบ", ai_summary: "ทดสอบความสามารถในการจินตนาการวัตถุ 3 มิติจากภาพ 2 มิติ (ภาพฉาย), การคลี่รูปทรง, และความเข้าใจหลักการเขียนแบบพื้นฐาน" }, { id: "tpat3-mechanics", title: "กลศาสตร์ประยุกต์", ai_summary: "เน้นความเข้าใจฟิสิกส์พื้นฐานเพื่อการใช้งานจริง เช่น สมดุล, โมเมนต์, และเครื่องกลอย่างง่าย" }, { id: "tpat3-logic", title: "การคิดเชิงตรรกะและจริยธรรม", ai_summary: "วัดทักษะการแก้ปัญหา, การจับใจความ, และการประเมินสถานการณ์ทางจริยธรรมของวิศวกร" } ] },
@@ -85,36 +85,30 @@
         const resultsContainer = document.getElementById('results-container');
         let questions = [];
 
+        // REPLACED: This function now uses the backend API
         async function generateExam(topic) {
             try {
-                // CORRECTED: Use imported 'app' instance
-                const vertexAI = getVertexAI(app);
-                const model = getGenerativeModel({ 
-                    model: "gemini-1.5-flash-preview-0514",
-                    generationConfig: { responseMimeType: "application/json" }
+                const prompt = `สร้างข้อสอบปรนัย 4 ตัวเลือก จำนวน 5 ข้อ สำหรับการสอบเข้ามหาวิทยาลัยในประเทศไทยในหัวข้อ "${topic.title}" (${topic.ai_summary}) โดยเน้นคำถามที่ต้องใช้การวิเคราะห์ ไม่ใช่แค่การท่องจำ และต้องตอบกลับมาในรูปแบบ JSON เท่านั้น ห้ามมี markdown หรือ backtick ตามรูปแบบนี้:
+                {"questions":[{"question_text":"คำถาม","choices":["ก","ข","ค","ง"],"correct_answer_index":0,"explanation":"คำอธิบาย"}]}`;
+
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
                 });
 
-                const prompt = `สร้างข้อสอบปรนัย 4 ตัวเลือก จำนวน 5 ข้อ สำหรับการสอบเข้ามหาวิทยาลัยในประเทศไทยในหัวข้อ "${topic.title}" (${topic.ai_summary}) โดยเน้นคำถามที่ต้องใช้การวิเคราะห์ ไม่ใช่แค่การท่องจำ และต้องตอบกลับมาในรูปแบบ JSON structure เท่านั้น ตามรูปแบบนี้:
-                {
-                  "questions": [
-                    {
-                      "question_text": "คำถามข้อที่ 1",
-                      "choices": ["ตัวเลือก ก", "ตัวเลือก ข", "ตัวเลือก ค", "ตัวเลือก ง"],
-                      "correct_answer_index": 0, // index ของคำตอบที่ถูกต้อง (0-3)
-                      "explanation": "คำอธิบายว่าทำไมคำตอบนี้จึงถูกต้อง"
-                    }
-                  ]
-                }`;
+                if (!response.ok) throw new Error('API error');
 
-                const result = await model.generateContent(prompt);
-                const response = await result.response;
-                const jsonResponse = JSON.parse(response.text());
+                const data = await response.json();
+                // Clean markdown backticks before parsing
+                const cleaned = data.generatedText.replace(/```json|```/g, '').trim();
+                const jsonResponse = JSON.parse(cleaned);
                 questions = jsonResponse.questions;
                 displayQuestions();
 
             } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                quizContent.innerHTML = `<p style="color: #ff6b6b;">เกิดข้อผิดพลาดในการสร้างข้อสอบ กรุณาลองใหม่อีกครั้ง</p>`;
+                console.error("Error:", error);
+                quizContent.innerHTML = `<p style="color:#ff6b6b;">เกิดข้อผิดพลาด กรุณาลองใหม่</p>`;
                 loadingState.style.display = 'none';
                 quizContent.style.display = 'block';
             }
@@ -150,7 +144,7 @@
             questions.forEach((q, index) => {
                 const selectedBtn = document.querySelector(`.choice-btn[data-question='${index}'].selected`);
                 const choiceBtns = document.querySelectorAll(`.choice-btn[data-question='${index}']`);
-                choiceBtns.forEach(btn => btn.disabled = true); // Disable all buttons after submission
+                choiceBtns.forEach(btn => btn.disabled = true);
 
                 if (selectedBtn) {
                     const selectedAnswer = parseInt(selectedBtn.dataset.choice);
@@ -172,7 +166,7 @@
              resultsContainer.innerHTML = `
                 <h2>ผลการสอบ</h2>
                 <p>คุณทำได้ ${score} เต็ม ${total} คะแนน</p>
-                <a href="home.html" style="color: var(--primary-orange);">กลับไปหน้าแรก</a>
+                <a href="index.html" style="color: var(--primary-orange);">กลับไปหน้าแรก</a>
             `;
             resultsContainer.style.display = 'block';
             quizContent.style.display = 'none';
@@ -181,7 +175,6 @@
 
         // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
-            // CORRECTED: Use imported 'auth' instance
             onAuthStateChanged(auth, user => {
                 if (user) {
                     const params = new URLSearchParams(window.location.search);
