@@ -1,4 +1,4 @@
-      {
+{
         "name": "node-express-api",
         "description": "Simple api sample in Node",
         "version": "1.0.0",
@@ -6,23 +6,24 @@
         "main": "index.js",
         "type": "module",
         "scripts": {
-          "dev": "nodemon index.js",
-          "start": "node api/index.mjs"
+                "dev": "nodemon index.js",
+                "start": "node api/index.mjs"
         },
         "author": "Google LLC",
         "license": "Apache-2.0",
         "dependencies": {
-          "@google/generative-ai": "^0.24.1",
-          "better-sqlite3-helper": "^3.1.7",
-          "cors": "^2.8.6",
-          "dotenv": "^17.4.2",
-          "express": "^4.22.1",
-          "firebase": "^12.12.1",
-          "lowdb": "^7.0.1",
-          "sqlite": "^5.1.1",
-          "sqlite3": "^5.1.7"
+                "@google/generative-ai": "^0.24.1",
+                "better-sqlite3-helper": "^3.1.7",
+                "cors": "^2.8.6",
+                "dotenv": "^17.4.2",
+                "express": "^4.22.1",
+                "firebase": "^12.12.1",
+                "helmet": "^8.1.0",
+                "lowdb": "^7.0.1",
+                "sqlite": "^5.1.1",
+                "sqlite3": "^5.1.7"
         },
         "devDependencies": {
-          "nodemon": "^3.0.1"
+                "nodemon": "^3.0.1"
         }
-      }
+}

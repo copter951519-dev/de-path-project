@@ -2,8 +2,8 @@
 
 import { EXAM_STRUCTURE } from './examData.js';
 
-// --- NEW: API Endpoint --- //
-const API_ENDPOINT = 'http://localhost:3000/api/generate';
+// --- CORRECTED API Endpoint for Vercel ---
+const API_ENDPOINT = '/api/generate';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -30,10 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showView(viewName) {
         [subjectSelectionView, topicSelectionView, aiTutorView, examView].forEach(v => v.classList.add('hidden'));
-        if (viewName === 'subjects') subjectSelectionView.classList.remove('hidden');
-        if (viewName === 'topics') topicSelectionView.classList.remove('hidden');
-        if (viewName === 'tutor') aiTutorView.classList.remove('hidden');
-        if (viewName === 'exam') examView.classList.remove('hidden');
+        const viewToShow = document.getElementById(`${viewName}-view`);
+        if(viewToShow) viewToShow.classList.remove('hidden');
     }
 
     function renderSubjectSelection() {
@@ -60,15 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
             topicItem.addEventListener('click', () => onTopicSelect(topic));
             topicListContainer.appendChild(topicItem);
         });
-        showView('topics');
+        showView('topic-selection');
     }
 
-    /**
-     * --- NEW: Generic API Caller Function ---
-     * @param {string} prompt - The full prompt to send to the Gemini API.
-     * @param {HTMLElement} outputElement - The element to display the result in.
-     * @param {string} loadingText - The text to display while waiting for the API.
-     */
     async function callGeminiAPI(prompt, outputElement, loadingText = "AI กำลังทำงาน...") {
         outputElement.innerHTML = `<div class="loading">${loadingText}</div>`;
         try {
@@ -84,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
-            // Replace newlines with <br> for HTML display
             outputElement.innerHTML = data.generatedText.replace(/\n/g, '<br>');
 
         } catch (error) {
@@ -93,55 +84,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * --- UPGRADED: Renders the AI Tutor and calls the API for a summary. ---
-     * @param {object} topic - The full topic object.
-     */
     function renderAiTutor(topic) {
         currentTopic = topic;
         const subject = EXAM_STRUCTURE[currentSubjectKey];
 
         aiTutorTitle.textContent = topic.title;
         aiTutorSubject.textContent = `สรุปเนื้อหาสำคัญสำหรับวิชา ${subject.title}`;
-        showView('tutor');
+        showView('ai-tutor');
         
-        // --- The Magic Happens Here! ---
         const summaryPrompt = `ในฐานะติวเตอร์มืออาชีพ ช่วยสรุปเนื้อหาเรื่อง "${topic.title}" สำหรับการเตรียมสอบวิชา "${subject.title}" ให้หน่อยครับ เน้นประเด็นสำคัญที่มักออกสอบ, สูตรที่ต้องจำ, และยกตัวอย่างโจทย์สั้นๆ ถ้าเป็นไปได้ เพื่อให้นักเรียนเข้าใจง่ายที่สุด`;
         callGeminiAPI(summaryPrompt, aiSummaryText, "AI ติวเตอร์กำลังเตรียมสรุปเนื้อหาให้คุณ...");
     }
-
-    /**
-     * --- UPGRADED: Starts the AI-generated mock exam by calling the API. ---
-     */
+    
+    // --- COMPLETELY REVISED FUNCTION ---
     function startMockExam() {
         const subject = EXAM_STRUCTURE[currentSubjectKey];
         const examPrompt = `ในฐานะอาจารย์ผู้ออกข้อสอบ, จงสร้างข้อสอบปรนัย (multiple choice) 4 ตัวเลือก พร้อมเฉลย (ใส่เครื่องหมาย * หน้าคำตอบที่ถูก) จำนวน 5 ข้อ จากหัวข้อเรื่อง "${currentTopic.title}" ของวิชา "${subject.title}" สำหรับนักเรียนที่กำลังเตรียมสอบเข้ามหาวิทยาลัย`;
-        
-        // For now, we will just show the raw text in an alert.
-        // A future upgrade would parse this into an interactive exam view.
-        alert("AI กำลังสร้างข้อสอบให้คุณ... กรุณากด OK แล้วรอสักครู่");
 
-        callGeminiAPI(examPrompt, document.createElement('div'), "") // Use a dummy element
-            .then(() => {
-                 // After the call is complete (success or fail), check the dummy element
-                 const dummyElement = document.createElement('div');
-                 callGeminiAPI(examPrompt, dummyElement, "").then(() => {
-                     alert("ข้อสอบที่ AI สร้างให้:\n\n" + dummyElement.innerText);
-                 })
-            });
+        showView('exam');
+        const examOutputElement = document.getElementById('exam-output');
+        callGeminiAPI(examPrompt, examOutputElement, "AI กำลังสร้างชุดข้อสอบแบบปรนัยสำหรับคุณ");
     }
 
-    // --- EVENT HANDLERS (no changes) --- //
+    // --- EVENT HANDLERS --- //
     function onSubjectSelect(subjectKey) { renderTopicSelection(subjectKey); }
     function onTopicSelect(topic) { renderAiTutor(topic); }
-    backToSubjectsBtn.addEventListener('click', () => showView('subjects'));
+    backToSubjectsBtn.addEventListener('click', () => showView('subject-selection'));
     backToTopicsBtn.addEventListener('click', () => renderTopicSelection(currentSubjectKey));
     startMockExamBtn.addEventListener('click', startMockExam);
 
-    // --- INITIALIZATION (no changes) --- //
+    // --- INITIALIZATION --- //
     function initialize() {
+        // Check for URL params to deep-link into a topic
+        const urlParams = new URLSearchParams(window.location.search);
+        const topicId = urlParams.get('topic');
+
+        if (topicId) {
+            // Find the subject and topic from the data structure
+            for (const subjKey in EXAM_STRUCTURE) {
+                const foundTopic = EXAM_STRUCTURE[subjKey].topics.find(t => t.id === topicId);
+                if (foundTopic) {
+                    currentSubjectKey = subjKey;
+                    renderAiTutor(foundTopic);
+                    return; // Stop after finding
+                }
+            }
+        }
+
+        // Default view
         renderSubjectSelection();
-        showView('subjects');
+        showView('subject-selection');
     }
 
     initialize();

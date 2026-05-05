@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ยินดีต้อนรับสู่ DE-PATH</title>
+    <link rel="stylesheet" href="hometheme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        .content-glass { max-width: 800px; text-align: center; }
+        .form-group { margin-bottom: 2rem; text-align: left; }
+        .form-group label { display: block; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-primary); }
+        .checkbox-grid, .radio-grid { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .checkbox-item, .radio-item { display: flex; align-items: center; background-color: var(--glass-bg-darker); padding: 0.75rem 1.25rem; border-radius: 10px; border: 1px solid var(--glass-stroke); cursor: pointer; }
+        .checkbox-item input, .radio-item input { margin-right: 0.75rem; }
+        .input-field { width: 100%; padding: 0.85rem 1.25rem; border-radius: 10px; border: 1px solid var(--glass-stroke); background-color: var(--glass-bg); color: var(--text-primary); font-size: 1rem; }
+        .btn-primary { font-size: 1.1rem; padding: 0.8rem 2.5rem; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="main-split-bg"></div>
+    <main class="content-glass" style="margin-top: 3rem;">
+        <header class="page-header">
+            <h1>ยินดีต้อนรับสู่ DE-PATH!</h1>
+            <p>กรุณาตอบแบบสอบถามสั้นๆ เพื่อให้เราสร้างเส้นทางสู่คณะวิศวะฯ ที่ใช่สำหรับคุณ</p>
+        </header>
+
+        <form id="survey-form">
+            <div class="form-group">
+                <label>เป้าหมายคณะ/มหาวิทยาลัยของคุณคืออะไร?</label>
+                <input type="text" id="target-university" class="input-field" placeholder="เช่น วิศวะคอมฯ จุฬาฯ, วิศวะเครื่องกล บางมด">
+            </div>
+
+            <div class="form-group">
+                <label>คุณเน้นวิชาไหนเป็นพิเศษ? (เลือกได้มากกว่า 1 ข้อ)</label>
+                <div class="checkbox-grid">
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="Math1"> A-Level Math 1</label>
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="TPAT3"> TPAT 3</label>
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="Physics"> A-Level Physics</label>
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="Chemistry"> A-Level Chemistry</label>
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="English"> A-Level English</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>เป้าหมายการเรียนรู้ของคุณคืออะไร?</label>
+                <div class="radio-grid">
+                     <label class="radio-item"><input type="radio" name="goal" value="fundamentals" checked> ปูพื้นฐานให้แน่น</label>
+                     <label class="radio-item"><input type="radio" name="goal" value="advanced"> ตะลุยโจทย์ขั้นสูง</label>
+                     <label class="radio-item"><input type="radio" name="goal" value="mock_exams"> ฝึกทำข้อสอบจับเวลา</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary">เริ่มต้นเส้นทางของฉัน <i class="fas fa-arrow-right"></i></button>
+        </form>
+    </main>
+
+    <script type="module">
+        import { auth } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        document.getElementById('survey-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // In a real app, you would save this data to Firestore
+            // For now, we just redirect to the main dashboard
+            console.log('Survey submitted!');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
