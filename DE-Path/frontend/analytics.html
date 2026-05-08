@@ -19,6 +19,15 @@
 
 </head>
 <body>
+    <div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:sans-serif;">
+        <div style="width:50px; height:50px; border:5px solid #f3f3f3; border-top:5px solid #3498db; border-radius:50%; animation:spin 1s linear infinite;"></div>
+        <p style="margin-top:15px;">DE-PATH กำลังเตรียมข้อมูล...</p>
+    </div>
+
+    <style>
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+
     <div class="main-split-bg"></div>
 
     <aside class="sidebar-glass" id="sidebar">
@@ -32,7 +41,7 @@
             <a href="analytics.html" class="nav-item active"><i class="fas fa-chart-pie"></i><span class="nav-text">สรุปคะแนน</span></a>
 
             <div class="nav-group-label">ห้องสอบ</div>
-            <a href="exam.html" class="nav-item"><i class="fas fa-pencil-alt"></i><span class="nav-text">ทำข้อสอบ</span></a>
+            <a href="#" class="nav-item"><i class="fas fa-pencil-alt"></i><span class="nav-text">ทำข้อสอบ</span></a>
             <a href="calculator.html" class="nav-item"><i class="fas fa-calculator"></i><span class="nav-text">คิดคะแนน %</span></a>
             <a href="ranking.html" class="nav-item"><i class="fas fa-trophy"></i><span class="nav-text">จำลองอันดับ</span></a>
 

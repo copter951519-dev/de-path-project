@@ -1,6 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// Import Firestore
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 // พี่ใส่ 'export' ไว้ข้างหน้าเพื่อให้ไฟล์อื่นเรียกใช้ได้
@@ -19,3 +21,6 @@ const app = initializeApp(firebaseConfig);
 
 // Export 'auth' ออกไปด้วย เผื่อไฟล์อื่นเรียกใช้แบบสั้นๆ
 export const auth = getAuth(app);
+
+// Export 'db' for Firestore access
+export const db = getFirestore(app);

@@ -4,20 +4,57 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import rateLimit from 'express-rate-limit';
 
 const app = express();
 
 if (!process.env.GEMINI_API_KEY) {
-  console.warn('GEMINI_API_KEY is not set. API calls will fail.'); 
+  console.warn('GEMINI_API_KEY is not set. API calls will fail.');
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'FAKE_KEY');
 
-app.use(cors({ origin: true }));
+// --- CORS Configuration ---
+const allowedOrigins = [
+  'http://127.0.0.1:5500',
+  'http://localhost:5500',
+  'http://127.0.0.1:5501',
+  'http://localhost:5501',
+  'http://127.0.0.1:3000',
+  'http://localhost:3000'
+];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
+
+// --- Rate Limiting ---
+const apiLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 50, // Limit each IP to 50 requests per windowMs
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: 'Too many requests from this IP, please try again after 15 minutes'
+});
+
+// Apply the rate limiting middleware to API calls only
+app.use('/api', apiLimiter);
+
+
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(express.json());
 
-// Add a root route to prevent 404 on the main URL
 app.get('/', (req, res) => {
   res.send('DE-PATH AI Tutor is running!');
 });
@@ -42,12 +79,9 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
-// --- Start Server for Local Development ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Backend server is running on http://localhost:${PORT}`);
 });
-// -----------------------------------------
 
-// Export the app for Vercel
 export default app;
