@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "DE-Path/frontend/**/*",
+      "src": "DE-Path/frontend/index.html",
       "use": "@vercel/static"
     }
   ],
@@ -16,12 +16,8 @@
       "dest": "DE-Path/backend/server.mjs"
     },
     {
-      "src": "/(.*\\.(css|js|html|png|jpg|ico|svg))",
-      "dest": "DE-Path/frontend/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "DE-Path/frontend/index.html"
+      "dest": "DE-Path/frontend/$1"
     }
   ]
 }
