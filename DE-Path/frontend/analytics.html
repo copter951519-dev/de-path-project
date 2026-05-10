@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DE-PATH | สรุปคะแนน (Real-time)</title>
+    <meta name="description" content="ดูสรุปผลคะแนนและพัฒนาการในการทำข้อสอบของคุณแบบ Real-time">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link rel="stylesheet" href="hometheme.css">
+    <link rel="stylesheet" href="analytics.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+    <div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:sans-serif;">
+        <div style="width:50px; height:50px; border:5px solid #f3f3f3; border-top:5px solid #3498db; border-radius:50%; animation:spin 1s linear infinite;"></div>
+        <p style="margin-top:15px;">DE-PATH กำลังเตรียมข้อมูล...</p>
+    </div>
+
+    <style>
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+
+    <div class="main-split-bg"></div>
+
+    <aside class="sidebar-glass" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo">DE-PATH</span>
+            <i class="fas fa-bars" id="sidebar-toggle"></i>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-label">หน้าหลัก</div>
+            <a href="home.html" class="nav-item"><i class="fas fa-user-chart"></i><span class="nav-text">ภาพรวมทักษะ</span></a>
+            <a href="analytics.html" class="nav-item active"><i class="fas fa-chart-pie"></i><span class="nav-text">สรุปคะแนน</span></a>
+
+            <div class="nav-group-label">ห้องสอบ</div>
+            <a href="#" class="nav-item"><i class="fas fa-pencil-alt"></i><span class="nav-text">ทำข้อสอบ</span></a>
+            <a href="calculator.html" class="nav-item"><i class="fas fa-calculator"></i><span class="nav-text">คิดคะแนน %</span></a>
+            <a href="ranking.html" class="nav-item"><i class="fas fa-trophy"></i><span class="nav-text">จำลองอันดับ</span></a>
+
+            <div class="nav-group-label">แหล่งข้อมูล</div>
+            <a href="resources.html" class="nav-item"><i class="fas fa-university"></i><span class="nav-text">คณะวิศวะฯ</span></a>
+            <a href="calendar.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span class="nav-text">ปฏิทินสอบ</span></a>
+        </nav>
+    </aside>
+
+    <main class="content-glass" id="analytics-content">
+        <header class="page-header">
+            <div class="header-title">
+                <h1>สรุปผลและพัฒนาการ (Real-time)</h1>
+                <p>กราฟจะอัปเดตอัตโนมัติเมื่อมีข้อมูลคะแนนใหม่</p>
+            </div>
+        </header>
+
+        <div class="analytics-grid">
+            <div class="chart-card-glass">
+                <h3>พัฒนาการรายวิชา</h3>
+                <div class="chart-container">
+                    <canvas id="scoreLineChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card-glass">
+                <h3>ภาพรวมคะแนนล่าสุด</h3>
+                <div class="chart-container">
+                    <canvas id="performanceDoughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        // Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { firebaseConfig } from './firebase-config.js';
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- Sidebar Logic ---
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        if (sidebar && toggleBtn) {
+            const toggleSidebar = () => {
+                sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            };
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+            }
+            toggleBtn.addEventListener('click', toggleSidebar);
+        }
+
+        // --- Chart.js Setup ---
+        Chart.defaults.font.family = 'Kanit, sans-serif';
+        Chart.defaults.font.size = 14;
+        Chart.defaults.color = '#F4F4F5';
+
+        // Line Chart Instance
+        const lineCtx = document.getElementById('scoreLineChart')?.getContext('2d');
+        const lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                   y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                   x: { grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+                }
+            }
+        });
+
+        // Doughnut Chart Instance
+        const doughnutCtx = document.getElementById('performanceDoughnutChart')?.getContext('2d');
+        const doughnutChart = new Chart(doughnutCtx, {
+            type: 'doughnut',
+            data: { labels: ['ตอบถูก', 'ตอบผิด', 'ไม่ตอบ'], datasets: [] },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // --- Firebase Auth & Firestore Real-time Listener ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                // User is signed in, listen for score updates.
+                const scoresDocRef = doc(db, "userScores", user.uid);
+
+                onSnapshot(scoresDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const scoreData = docSnap.data();
+                        updateCharts(scoreData);
+                    } else {
+                        // No data yet, show empty/placeholder state
+                        console.log("No score data found for this user.");
+                        updateCharts(null); // Function to clear or show default charts
+                    }
+                });
+
+            } else {
+                // User is signed out
+                window.location.href = 'login.html';
+            }
+        });
+
+        function updateCharts(data) {
+            // === FAKE DATA (DELETE WHEN REAL DATA IS AVAILABLE) ===
+            if (!data) {
+                data = {
+                    progression: [
+                        { attempt: 1, math: 65, physics: 55, english: 80 },
+                        { attempt: 2, math: 68, physics: 58, english: 82 },
+                        { attempt: 3, math: 72, physics: 56, english: 85 },
+                        { attempt: 4, math: 70, physics: 62, english: 83 },
+                        { attempt: 5, math: 75, physics: 67, english: 88 }
+                    ],
+                    latestSummary: {
+                        correct: 120,
+                        incorrect: 25,
+                        skipped: 15
+                    }
+                }
+            }
+            // === END OF FAKE DATA ===
+
+            // Update Line Chart
+            if (data && data.progression) {
+                lineChart.data.labels = data.progression.map(p => `ครั้งที่ ${p.attempt}`);
+                lineChart.data.datasets = [
+                    { label: 'คณิตศาสตร์', data: data.progression.map(p => p.math), borderColor: '#FF6384', tension: 0.2 },
+                    { label: 'ฟิสิกส์', data: data.progression.map(p => p.physics), borderColor: '#36A2EB', tension: 0.2 },
+                    { label: 'ภาษาอังกฤษ', data: data.progression.map(p => p.english), borderColor: '#FFCE56', tension: 0.2 }
+                ];
+            } else {
+                lineChart.data.labels = ['ยังไม่มีข้อมูล'];
+                lineChart.data.datasets = [];
+            }
+            lineChart.update();
+
+            // Update Doughnut Chart
+            if (data && data.latestSummary) {
+                 doughnutChart.data.datasets = [{
+                    data: [data.latestSummary.correct, data.latestSummary.incorrect, data.latestSummary.skipped],
+                    backgroundColor: ['#4BC0C0', '#FF6384', '#9966FF'],
+                    hoverOffset: 4
+                }];
+            } else {
+                 doughnutChart.data.datasets = [{
+                    data: [0,0,0],
+                    backgroundColor: ['#4BC0C0', '#FF6384', '#9966FF']
+                }];
+            }
+            doughnutChart.update();
+        }
+
+    </script>
+</body>
+</html>

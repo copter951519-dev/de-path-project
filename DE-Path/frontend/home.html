@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DE-PATH | ติวเตอร์และข้อสอบ AI</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="hometheme.css">
+    <style>
+        .view-container { padding: 1rem; width: 100%; }
+        .hidden { display: none; }
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .subject-card { background-color: var(--glass-bg-darker); border-radius: 15px; padding: 1.5rem; transition: all 0.3s ease; cursor: pointer; }
+        .subject-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); border-color: var(--primary-orange); }
+        .subject-card-icon { font-size: 2rem; color: var(--primary-orange); margin-bottom: 1rem; }
+        .subject-card-title { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
+        .subject-card-desc { font-size: 0.95rem; color: var(--text-secondary); }
+        .topic-list { display: flex; flex-direction: column; gap: 1rem; }
+        .topic-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--glass-bg-darker); padding: 1.25rem; border-radius: 12px; cursor: pointer; transition: background-color 0.2s; }
+        .topic-item:hover { background-color: var(--glass-stroke); }
+        .ai-output { background-color: var(--glass-bg-darker); padding: 1.5rem; border-radius: 15px; line-height: 1.8; margin-top: 1rem; }
+        .ai-output .loading { text-align: center; font-size: 1.1rem; color: var(--text-secondary); }
+        .ai-output .error { color: #ff6b6b; }
+        .btn-primary { background-color: var(--primary-orange); color: white; padding: 12px 24px; border-radius: 10px; cursor: pointer; transition: background-color 0.2s; margin-top: 1.5rem; font-size: 1rem; border: none; font-weight: 700; }
+        .btn-secondary { background-color: var(--glass-stroke); color: var(--text-primary); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; border: none; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:sans-serif;">
+        <div style="width:50px; height:50px; border:5px solid #f3f3f3; border-top:5px solid #3498db; border-radius:50%; animation:spin 1s linear infinite;"></div>
+        <p style="margin-top:15px;">DE-PATH กำลังเตรียมข้อมูล...</p>
+    </div>
+
+    <style>
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+    <div class="main-split-bg"></div>
+    <aside class="sidebar-glass" id="sidebar"></aside>
+
+    <main class="content-glass">
+
+        <!-- View 1: Subject Selection -->
+        <div id="subject-selection-view" class="view-container">
+            <header class="page-header"><h1>เลือกวิชาเตรียมสอบ</h1></header>
+            <div id="subject-grid-container" class="subject-grid"></div>
+        </div>
+
+        <!-- View 2: Topic Selection -->
+        <div id="topic-selection-view" class="view-container hidden">
+            <button id="back-to-subjects" class="btn-secondary"><i class="fas fa-arrow-left"></i> กลับไปเลือกวิชา</button>
+            <header class="page-header"><h1 id="topic-selection-title"></h1></header>
+            <div id="topic-list-container" class="topic-list"></div>
+        </div>
+
+        <!-- View 3: AI Tutor Summary -->
+        <div id="ai-tutor-view" class="view-container hidden">
+            <button id="back-to-topics" class="btn-secondary"><i class="fas fa-arrow-left"></i> กลับไปเลือกหัวข้อ</button>
+            <header class="page-header">
+                <h1 id="ai-tutor-title"></h1>
+                <p id="ai-tutor-subject" style="color: var(--text-secondary);"></p>
+            </header>
+            <div id="ai-summary-text" class="ai-output"></div>
+            <button id="start-mock-exam-btn" class="btn-primary"><i class="fas fa-pencil-ruler"></i> เริ่มทำข้อสอบจำลอง</button>
+        </div>
+
+        <!-- View 4: Mock Exam -->
+        <div id="exam-view" class="view-container hidden">
+             <header class="page-header"><h1>ข้อสอบจำลอง AI</h1></header>
+             <div id="exam-output" class="ai-output"></div>
+        </div>
+
+    </main>
+
+    <script>
+        // Load and manage sidebar
+        fetch('sidebar.html').then(r => r.text()).then(data => {
+            document.getElementById('sidebar').innerHTML = data;
+            const sidebar = document.getElementById('sidebar'), toggleBtn = document.getElementById('sidebar-toggle');
+            const toggleSidebar = () => { sidebar.classList.toggle('collapsed'); localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed')); };
+            if (localStorage.getItem('sidebarCollapsed') === 'true') sidebar.classList.add('collapsed');
+            if(toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+        });
+    </script>
+    
+    <!-- Main Application Logic -->
+    <script type="module" src="exam.js"></script>
+
+</body>
+</html>
