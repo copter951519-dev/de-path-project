@@ -1,0 +1,79 @@
+/* ธีมหลักสีส้ม DE-PATH */
+:root {
+  --primary-orange: #FF6B00; /* สีส้มวิศวะ */
+  --dark-grey: #2B2B2B;
+  --light-grey: #F5F5F5;
+}
+
+body {
+  font-family: 'Kanit', sans-serif;
+  background-color: var(--light-grey);
+  color: var(--dark-grey);
+}
+
+.survey-container {
+  max-width: 600px;
+  margin: 50px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-top: 8px solid var(--primary-orange); /* ขอบบนสีส้ม */
+}
+
+h1 {
+  color: var(--primary-orange);
+  text-align: center;
+  font-weight: 700;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+input[type="text"], select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  outline: none;
+}
+
+input[type="text"]:focus {
+  border-color: var(--primary-orange);
+}
+
+/* ปรับแต่ง Checkbox ให้ดูดี */
+.checkbox-group {
+  background: #fff5ed;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+/* ปุ่มสีส้มเด่นๆ */
+.btn-start {
+  width: 100%;
+  background-color: var(--primary-orange);
+  color: white;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: transform 0.2s, background 0.3s;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn-start:hover {
+  background-color: #e66000;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
+}

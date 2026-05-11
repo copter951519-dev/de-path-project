@@ -1,107 +1,141 @@
 document.addEventListener('DOMContentLoaded', () => {
     const chatLog = document.getElementById('chat-log');
-    const optionsContainer = document.getElementById('chat-options');
+    const chatOptions = document.getElementById('chat-options');
+    let step = 0;
+    const userData = {};
 
-    const conversation = [
+    const surveySteps = [
         {
-            id: 'welcome',
-            text: 'สวัสดีครับ! ผมคือ DE-PATH AI ผู้ช่วยที่จะพาคุณไปค้นหาเส้นทางวิศวะคอมที่ใช่... ก่อนอื่นเลย, อะไรคือสิ่งที่พาคุณมาที่นี่ในวันนี้ครับ?',
-            options: [
-                { text: 'อยากรู้จักตัวเองมากขึ้น', next: 'q_problem_solving' },
-                { text: 'อยากเตรียมตัวสอบเข้า', next: 'q_problem_solving' },
-                { text: 'แค่มาดูเฉยๆ', next: 'q_problem_solving' }
-            ]
+            question: "สวัสดีครับ! ยินดีต้อนรับสู่ DE-PATH! <br>เพื่อให้เราสร้างเส้นทางสู่คณะวิศวะฯ ที่ใช่สำหรับคุณ ขอสอบถามข้อมูลเล็กน้อยนะครับ<br><br><b>เป้าหมายคณะ/มหาวิทยาลัยของคุณคืออะไร?</b>",
+            type: 'text',
+            key: 'universityGoal',
+            placeholder: 'เช่น วิศวะคอมฯ จุฬาฯ, วิศวะเครื่องกล บางมด'
         },
         {
-            id: 'q_problem_solving',
-            text: 'เยี่ยมเลย! ลองจินตนาการดูนะ... ถ้าเจอปัญหาเขียนโค้ดที่ซับซ้อนมากๆ คุณมีแนวโน้มจะทำอะไรเป็นอย่างแรก?',
-            options: [
-                { text: 'ลงมือลองผิดลองถูกไปเรื่อยๆ', next: 'q_project_type' },
-                { text: 'ค้นหาข้อมูล/ถามผู้เชี่ยวชาญ', next: 'q_project_type' },
-                { text: 'ขอพักไปทำอย่างอื่นก่อน', next: 'q_project_type' }
-            ]
+            question: "เยี่ยมเลย! แล้วคุณเน้นวิชาไหนเป็นพิเศษครับ? (เลือกได้มากกว่า 1 ข้อ)",
+            type: 'checkbox',
+            key: 'subjects',
+            options: ['A-Level Math 1', 'TPAT 3', 'A-Level Physics', 'A-Level Chemistry', 'A-Level English']
         },
         {
-            id: 'q_project_type',
-            text: 'น่าสนใจมากครับ! คำถามสุดท้าย... โปรเจกต์แบบไหนที่ฟังแล้วทำให้คุณรู้สึกตื่นเต้นที่สุด?',
-            options: [
-                { text: 'สร้างเว็บ/แอปให้คนนับล้านใช้', next: 'finish' },
-                { text: 'เขียน AI แก้ปัญหาเฉพาะทาง', next: 'finish' },
-                { text: 'พัฒนาเกมสนุกๆ กับเพื่อน', next: 'finish' }
-            ]
+            question: "สุดท้ายแล้ว เป้าหมายการเรียนรู้ของคุณคืออะไร?",
+            type: 'radio',
+            key: 'learningGoal',
+            options: ['ปูพื้นฐานให้แน่น', 'ตะลุยโจทย์ขั้นสูง', 'ฝึกทำข้อสอบจับเวลา']
         },
         {
-            id: 'finish',
-            text: 'ขอบคุณสำหรับข้อมูลครับ! ผมพอจะเห็นภาพของคุณชัดขึ้นแล้ว... ตอนนี้เราไปสร้างโปรไฟล์ของคุณเพื่อเริ่มเส้นทาง DE-PATH กันเลยดีกว่า!',
-            options: [] // No options, shows the final link
+            question: "ขอบคุณสำหรับข้อมูลครับ! เราได้จัดทำแผนการเรียนรู้เบื้องต้นให้คุณแล้ว",
+            type: 'final',
         }
     ];
 
-    let currentStep = 'welcome';
+    function addMessage(text, sender = 'bot') {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
 
-    function displayStep(stepId) {
-        const step = conversation.find(s => s.id === stepId);
-        if (!step) return;
+        const messageContent = document.createElement('div');
+        messageContent.classList.add('message-content');
+        
+        const messageBubble = document.createElement('div');
+        messageBubble.classList.add('message-bubble');
+        messageBubble.innerHTML = text; 
 
-        addMessage(step.text, 'bot');
+        messageContent.appendChild(messageBubble);
+        messageElement.appendChild(messageContent);
+        chatLog.appendChild(messageElement);
+        chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll to bottom
+    }
 
-        optionsContainer.innerHTML = '';
+    function showOptions(stepConfig) {
+        chatOptions.innerHTML = ''; // Clear previous options
         const wrapper = document.createElement('div');
         wrapper.className = 'options-wrapper';
 
-        setTimeout(() => {
-            if (step.id === 'finish') {
-                const finalLink = document.createElement('a');
-                finalLink.href = 'login.html';
-                finalLink.className = 'final-link';
-                finalLink.textContent = 'ไปหน้าถัดไป';
-                wrapper.appendChild(finalLink);
-            } else {
-                step.options.forEach(option => {
+        switch(stepConfig.type) {
+            case 'text':
+                const form = document.createElement('form');
+                form.style.display = 'flex';
+                form.style.gap = '10px';
+                form.style.width = '100%';
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = stepConfig.placeholder;
+                input.style.flexGrow = '1';
+                input.className = 'option-btn'; // Reuse style
+                input.style.padding = '10px 20px';
+                const submitBtn = document.createElement('button');
+                submitBtn.type = 'submit';
+                submitBtn.innerText = 'ส่ง';
+                submitBtn.className = 'option-btn';
+
+                form.appendChild(input);
+                form.appendChild(submitBtn);
+                wrapper.appendChild(form);
+
+                form.addEventListener('submit', e => {
+                    e.preventDefault();
+                    if (input.value) {
+                        userData[stepConfig.key] = input.value;
+                        addMessage(input.value, 'user');
+                        step++;
+                        runStep();
+                    }
+                });
+                break;
+
+            case 'checkbox':
+            case 'radio':
+                stepConfig.options.forEach(optionText => {
                     const button = document.createElement('button');
                     button.className = 'option-btn';
-                    button.textContent = option.text;
-                    button.onclick = () => handleOptionSelect(option);
+                    button.innerText = optionText;
+                    button.dataset.value = optionText;
                     wrapper.appendChild(button);
+                    
+                    button.addEventListener('click', () => {
+                        button.classList.toggle('selected'); // Visual feedback
+                    });
                 });
-            }
-            optionsContainer.appendChild(wrapper);
-        }, 600);
-    }
 
-    function handleOptionSelect(option) {
-        addMessage(option.text, 'user');
-        
-        const wrapper = optionsContainer.querySelector('.options-wrapper');
-        if(wrapper) {
-            wrapper.innerHTML = '<p style="color: var(--text-secondary);">DE-PATH AI is typing...</p>';
+                const confirmBtn = document.createElement('button');
+                confirmBtn.innerText = 'ยืนยัน';
+                confirmBtn.className = 'option-btn';
+                confirmBtn.style.backgroundColor = 'var(--primary-orange)';
+                confirmBtn.style.color = 'white';
+                wrapper.appendChild(confirmBtn);
+
+                confirmBtn.addEventListener('click', () => {
+                    const selected = wrapper.querySelectorAll('.option-btn.selected');
+                    if (selected.length > 0) {
+                        const values = Array.from(selected).map(btn => btn.dataset.value);
+                        userData[stepConfig.key] = (stepConfig.type === 'radio') ? values[0] : values;
+                        addMessage(values.join(', '), 'user');
+                        step++;
+                        runStep();
+                    }
+                });
+                break;
+
+            case 'final':
+                const finalLink = document.createElement('a');
+                finalLink.href = 'home.html';
+                finalLink.className = 'final-link';
+                finalLink.innerText = 'เริ่มต้นเส้นทางของฉัน';
+                wrapper.appendChild(finalLink);
+                break;
         }
-
-        setTimeout(() => {
-            currentStep = option.next;
-            displayStep(currentStep);
-        }, 1200);
+        chatOptions.appendChild(wrapper);
     }
 
-    function addMessage(text, sender) {
-        const messageElement = document.createElement('div');
-        messageElement.className = `message ${sender}`;
-
-        const contentWrapper = document.createElement('div');
-        contentWrapper.className = 'message-content';
-        
-        const bubble = document.createElement('div');
-        bubble.className = 'message-bubble';
-        bubble.textContent = text;
-        
-        contentWrapper.appendChild(bubble);
-        messageElement.appendChild(contentWrapper);
-        chatLog.appendChild(messageElement);
-        
-        chatLog.scrollTop = chatLog.scrollHeight;
+    function runStep() {
+        if (step < surveySteps.length) {
+            const currentStep = surveySteps[step];
+            addMessage(currentStep.question, 'bot');
+            showOptions(currentStep);
+        } else {
+            console.log("Survey Complete:", userData);
+        }
     }
 
-    setTimeout(() => {
-        displayStep(currentStep);
-    }, 500);
+    runStep(); // Start the survey
 });
