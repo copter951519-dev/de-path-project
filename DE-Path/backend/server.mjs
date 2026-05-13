@@ -11,7 +11,8 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.static(path.join(__dirname, '..', '..', 'public')));
+// Serve static files from the project root
+app.use(express.static(path.join(__dirname, '..', '..')));
 
 if (!process.env.GEMINI_API_KEY) {
   console.warn('GEMINI_API_KEY is not set. API calls will fail.');
@@ -24,6 +25,7 @@ const allowedOrigins = [
   'http://localhost:5500',
   'http://127.0.0.1:3000',
   'http://localhost:3000',
+  'https://de-path-project.vercel.app',
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -77,8 +79,9 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
+// Catch all routes to serve the main index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', '..', 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', '..', 'index.html'));
 });
 
 export default app;
