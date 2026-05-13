@@ -52,8 +52,9 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": ["'self'", "https://www.gstatic.com", "https://cdnjs.cloudflare.com"],
-      "img-src": ["'self'", "https://i.imgur.com"],
+      "script-src": ["'self'", "'unsafe-inline'", "https://www.gstatic.com", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+      "img-src": ["'self'", "data:", "https:"],
+      "connect-src": ["'self'", "https://*.googleapis.com", "https://*.firebaseio.com", "https://firestore.googleapis.com"],
     },
   },
 }));
