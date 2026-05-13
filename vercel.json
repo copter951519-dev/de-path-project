@@ -4,6 +4,10 @@
     {
       "src": "DE-Path/backend/server.mjs",
       "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -12,16 +16,8 @@
       "dest": "DE-Path/backend/server.mjs"
     },
     {
-      "src": "/(.*\\.(css|js|html|png|jpg|svg|ico|woff|woff2))",
-      "dest": "/public/$1"
-    },
-    {
-      "src": "/",
-      "dest": "/public/index.html"
-    },
-    {
       "src": "/(.*)",
-      "dest": "DE-Path/backend/server.mjs"
+      "dest": "/public/$1"
     }
   ]
 }
