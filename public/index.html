@@ -124,7 +124,7 @@
   }
   .goal-card:hover { border-color: rgba(234,179,8,0.45); background: rgba(234,179,8,0.07); }
   .goal-card.active { border-color: rgba(234,179,8,0.7); background: rgba(234,179,8,0.12); }
-  .goal-icon { font-size: 24px; margin-bottom: 7px; display: block; }
+    .goal-icon { font-size: 24px; margin-bottom: 7px; display: block; }
   .goal-text { font-size: 12px; font-weight: 600; color: #a8956e; line-height: 1.5; }
   .goal-card.active .goal-text { color: #eab308; }
   .divider { height: 1px; background: rgba(251,146,60,0.1); }
@@ -237,7 +237,7 @@
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     let currentUser = null;
 
@@ -293,12 +293,12 @@
             focusedSubjects: selectedSubjects,
             learningGoal: learningGoal,
             surveyCompleted: true,
-            profileCreatedAt: serverTimestamp()
+            profileCreatedAt: new Date().toISOString()
         };
 
         try {
-            const userDocRef = doc(db, "userProfiles", currentUser.uid);
-            await setDoc(userDocRef, userProfileData, { merge: true });
+            const userRef = ref(db, "userProfiles/" + currentUser.uid);
+            await set(userRef, userProfileData);
             console.log("User profile data saved successfully!");
             window.location.href = 'home.html';
         } catch (error) {
