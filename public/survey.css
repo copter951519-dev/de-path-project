@@ -1,147 +1,150 @@
-/* survey.css - Fullscreen Chatbot Interface Styling */
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
 
-/* Ensure body takes full space without centering items */
+:root {
+    --orange-main: #FF6B00;
+    --orange-soft: #FFF5ED;
+    --text-primary: #2c3e50;
+    --text-secondary: #828282;
+    --bg-main: #f4f7f6;
+    --border-color: #e0e0e0;
+}
+
 body {
-    margin: 0;
-    padding: 0;
-    display: block; 
-}
-
-/* Main container for the chat interface - now fullscreen */
-.chat-container {
-    width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background-color: transparent;
-    border-radius: 0;
-}
-
-.chat-header {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 15px 20px;
-    text-align: center;
-    flex-shrink: 0;
-}
-
-.chat-header h3 {
-    margin: 0;
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
-/* Area where messages appear */
-.chat-log {
-    flex-grow: 1;
-    overflow-y: auto; /* Allow scrolling for messages */
-    padding: 20px 10px; /* Add padding for space from edges */
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-/* Base message styling */
-.message {
-    display: flex;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeIn 0.5s ease forwards;
-    /* This wrapper centers the content */
-    justify-content: center;
-}
-
-.message-content {
-    width: 100%;
-    max-width: 800px; /* Constrain content width for readability */
-    display: flex;
-}
-
-.message.bot .message-content {
-    justify-content: flex-start;
-}
-
-.message.user .message-content {
-    justify-content: flex-end;
-}
-
-.message-bubble {
-    padding: 12px 18px;
-    border-radius: 18px;
-    max-width: 85%; /* Max width relative to the content container */
-    line-height: 1.5;
-}
-
-.message.bot .message-bubble {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-secondary);
-    border-bottom-left-radius: 4px;
-}
-
-.message.user .message-bubble {
-    background: var(--primary-orange);
-    color: #fff;
-    border-bottom-right-radius: 4px;
-}
-
-/* Area for user action buttons */
-.chat-options {
-    flex-shrink: 0;
-    padding: 20px;
-    border-top: 1px solid var(--border-color);
-    background: rgba(0,0,0,0.2);
-    display: flex;
-    justify-content: center;
-}
-
-.options-wrapper {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-}
-
-.option-btn, .final-link {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeIn 0.5s 0.2s ease forwards;
-}
-
-.option-btn {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
     font-family: 'Kanit', sans-serif;
-    font-size: 1rem;
-    transition: all 0.2s ease;
+    background-color: var(--bg-main);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* จัดให้อยู่บนสุด */
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    box-sizing: border-box;
 }
 
-.option-btn:hover {
-    background-color: var(--primary-orange);
-    border-color: var(--primary-orange);
-    color: #fff;
+.survey-container {
+    background: white;
+    width: 100%;
+    max-width: 650px;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
 }
 
-.final-link {
-    display: inline-block;
-    background: var(--primary-orange);
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 500;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 8px;
+.survey-header {
+    text-align: center;
+    margin-bottom: 35px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+}
+
+.survey-header h1 {
+    color: var(--orange-main);
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.survey-header p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+.form-group {
+    margin-bottom: 30px;
+}
+
+.question-label {
+    display: block;
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.input-field {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-field::placeholder {
+    color: #bdbdbd;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--orange-main);
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+}
+
+.checkbox-group, .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.checkbox-item, .radio-item {
+    background-color: #fcfcfc;
+    padding: 14px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
     cursor: pointer;
-    transition: transform 0.3s ease;
-    text-decoration: none;
+    transition: border-color 0.2s, background-color 0.2s;
 }
 
-.final-link:hover { transform: scale(1.05); }
+.checkbox-item:hover, .radio-item:hover {
+    border-color: #c7c7c7;
+    background-color: #fafafa;
+}
 
-@keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+.checkbox-item input, .radio-item input {
+    margin-right: 15px;
+    transform: scale(1.2);
+    accent-color: var(--orange-main);
+}
+
+.btn-submit {
+    width: 100%;
+    background: var(--orange-main);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-submit:hover {
+    background: #E66000;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 107, 0, 0.25);
+}
+
+.btn-submit:disabled {
+    background-color: #ffc499;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-submit i {
+    transition: transform 0.3s;
+}
+
+.btn-submit:hover:not(:disabled) i {
+    transform: translateX(5px);
+}

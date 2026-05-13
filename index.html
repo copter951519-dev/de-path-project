@@ -1,126 +1,313 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ยินดีต้อนรับสู่ DE-PATH</title>
-    <link rel="stylesheet" href="hometheme.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        .content-glass { max-width: 800px; text-align: center; }
-        .form-group { margin-bottom: 2rem; text-align: left; }
-        .form-group label { display: block; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-primary); }
-        .checkbox-grid, .radio-grid { display: flex; flex-wrap: wrap; gap: 1rem; }
-        .checkbox-item, .radio-item { display: flex; align-items: center; background-color: var(--glass-bg-darker); padding: 0.75rem 1.25rem; border-radius: 10px; border: 1px solid var(--glass-stroke); cursor: pointer; }
-        .checkbox-item input, .radio-item input { margin-right: 0.75rem; }
-        .input-field { width: 100%; padding: 0.85rem 1.25rem; border-radius: 10px; border: 1px solid var(--glass-stroke); background-color: var(--glass-bg); color: var(--text-primary); font-size: 1rem; }
-        .btn-primary { font-size: 1.1rem; padding: 0.8rem 2.5rem; margin-top: 1rem; }
-        .btn-primary:disabled { background-color: #ccc; cursor: not-allowed; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DE-PATH | ยินดีต้อนรับ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Chakra+Petch:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Sarabun', sans-serif;
+    min-height: 100vh;
+    background: #0f0a00;
+    color: #f5ede0;
+  }
+  .hero-bg {
+    position: relative;
+    background: linear-gradient(135deg, #0f0a00 0%, #1a1000 60%, #120d02 100%);
+    padding: 48px 32px 36px;
+    overflow: hidden;
+  }
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 340px; height: 340px;
+    background: radial-gradient(circle, rgba(251,146,60,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(234,179,8,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(251,146,60,0.12);
+    border: 1px solid rgba(251,146,60,0.35);
+    color: #fb923c;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    padding: 5px 13px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: #fb923c;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.75); }
+  }
+  .hero-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+    color: #f5ede0;
+  }
+  .hero-title .accent {
+    background: linear-gradient(90deg, #fb923c, #eab308);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 14px;
+    color: #a8956e;
+    line-height: 1.7;
+    max-width: 420px;
+    position: relative;
+    z-index: 1;
+    margin-top: 10px;
+  }
+  .form-area { padding: 28px 32px 40px; background: #0f0a00; display: flex; flex-direction: column; gap: 26px; }
+  .q-block { display: flex; flex-direction: column; gap: 11px; }
+  .q-label { font-size: 13px; font-weight: 700; color: #d4bfa0; letter-spacing: 0.02em; display: flex; align-items: center; gap: 9px; }
+  .q-num {
+    width: 23px; height: 23px;
+    background: linear-gradient(135deg, #fb923c, #eab308);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #0f0a00;
+    flex-shrink: 0;
+  }
+  .text-input {
+    width: 100%; background: #1a1000; border: 1px solid rgba(251,146,60,0.15); border-radius: 10px;
+    padding: 13px 16px; font-family: 'Sarabun', sans-serif; font-size: 14px; color: #f5ede0;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .text-input:focus { border-color: rgba(251,146,60,0.55); box-shadow: 0 0 0 3px rgba(251,146,60,0.09); }
+  .text-input::placeholder { color: #4a3820; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid rgba(251,146,60,0.18); background: #1a1000; color: #a8956e;
+    font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: all 0.15s ease; user-select: none;
+  }
+  .chip:hover { border-color: rgba(251,146,60,0.5); color: #f5ede0; background: rgba(251,146,60,0.08); }
+  .chip.active { background: rgba(251,146,60,0.15); border-color: rgba(251,146,60,0.65); color: #fb923c; }
+  .goal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .goal-card {
+    background: #1a1000; border: 1px solid rgba(251,146,60,0.15); border-radius: 12px;
+    padding: 18px 12px; cursor: pointer; transition: all 0.15s ease; text-align: center; user-select: none;
+  }
+  .goal-card:hover { border-color: rgba(234,179,8,0.45); background: rgba(234,179,8,0.07); }
+  .goal-card.active { border-color: rgba(234,179,8,0.7); background: rgba(234,179,8,0.12); }
+  .goal-icon { font-size: 24px; margin-bottom: 7px; display: block; }
+  .goal-text { font-size: 12px; font-weight: 600; color: #a8956e; line-height: 1.5; }
+  .goal-card.active .goal-text { color: #eab308; }
+  .divider { height: 1px; background: rgba(251,146,60,0.1); }
+  .cta-btn {
+    width: 100%; padding: 16px; background: linear-gradient(135deg, #fb923c 0%, #eab308 100%);
+    border: none; border-radius: 12px; font-family: 'Chakra Petch', sans-serif; font-size: 15px;
+    font-weight: 700; color: #0f0a00; letter-spacing: 0.05em; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: opacity 0.2s, transform 0.15s, background 0.2s;
+  }
+  .cta-btn:hover { opacity: 0.92; }
+  .cta-btn:active { transform: scale(0.99); }
+  .cta-btn:disabled { background: #4a3820; color: #a8956e; cursor: not-allowed; }
+  .cta-arrow { font-size: 18px; transition: transform 0.2s; }
+  .cta-btn:hover:not(:disabled) .cta-arrow { transform: translateX(5px); }
+  .stats-row { display: flex; align-items: center; justify-content: center; gap: 28px; padding-top: 4px; }
+  .stat-item { text-align: center; }
+  .stat-num { font-family: 'Chakra Petch', sans-serif; font-size: 16px; font-weight: 700; color: #f5ede0; }
+  .stat-lbl { font-size: 11px; color: #4a3820; margin-top: 2px; }
+  .stat-sep { width: 1px; height: 30px; background: rgba(251,146,60,0.15); }
+</style>
 </head>
 <body>
-    <div class="main-split-bg"></div>
-    <main class="content-glass" style="margin-top: 3rem;">
-        <header class="page-header">
-            <h1>ยินดีต้อนรับสู่ DE-PATH!</h1>
-            <p>กรุณาตอบแบบสอบถามสั้นๆ เพื่อให้เราสร้างเส้นทางสู่คณะวิศวะฯ ที่ใช่สำหรับคุณ</p>
-        </header>
-
-        <form id="survey-form">
-            <div class="form-group">
-                <label>เป้าหมายคณะ/มหาวิทยาลัยของคุณคืออะไร?</label>
-                <input type="text" id="target-university" class="input-field" placeholder="เช่น วิศวะคอมฯ จุฬาฯ, วิศวะเครื่องกล บางมด" required>
+  <div class="hero-bg">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Engineering Pathway Platform
+    </div>
+    <div class="hero-title">
+      ยินดีต้อนรับสู่<br><span class="accent">DE-PATH!</span>
+    </div>
+    <p class="hero-sub">
+      กรุณาตอบแบบสอบถามสั้นๆ เพื่อให้เราสร้างเส้นทางสู่คณะวิศวะฯ ที่ใช่สำหรับคุณ
+    </p>
+  </div>
+ 
+  <form id="survey-form">
+    <div class="form-area">
+        <div class="q-block">
+            <div class="q-label">
+                <span class="q-num">1</span>
+                เป้าหมายคณะ/มหาวิทยาลัยของคุณคืออะไร?
             </div>
+            <input id="target-university" class="text-input" type="text" placeholder="เช่น วิศวกรรมศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย..." required>
+        </div>
 
-            <div class="form-group">
-                <label>คุณเน้นวิชาไหนเป็นพิเศษ? (เลือกได้มากกว่า 1 ข้อ)</label>
-                <div class="checkbox-grid">
-                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="Math1"> A-Level Math 1</label>
-                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="TPAT3"> TPAT 3</label>
-                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="Physics"> A-Level Physics</label>
-                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="Chemistry"> A-Level Chemistry</label>
-                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="English"> A-Level English</label>
+        <div class="divider"></div>
+
+        <div class="q-block">
+            <div class="q-label">
+                <span class="q-num">2</span>
+                คุณเน้นวิชาไหนเป็นพิเศษ? <span style="color:#4a3820;font-weight:400;margin-left:4px;">(เลือกได้มากกว่า 1 ข้อ)</span>
+            </div>
+            <div class="chips">
+                <div class="chip" data-value="Math1">📐 A-Level Math 1</div>
+                <div class="chip" data-value="TPAT3">✏️ TPAT 3</div>
+                <div class="chip" data-value="Physics">⚛️ A-Level Physics</div>
+                <div class="chip" data-value="Chemistry">🧪 A-Level Chemistry</div>
+                <div class="chip" data-value="English">🌐 A-Level English</div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="q-block">
+            <div class="q-label">
+                <span class="q-num">3</span>
+                เป้าหมายการเรียนรู้ของคุณคืออะไร?
+            </div>
+            <div class="goal-grid">
+                <div class="goal-card" data-value="fundamentals">
+                    <span class="goal-icon">🏗️</span>
+                    <div class="goal-text">ปูพื้นฐาน<br>ให้แน่น</div>
+                </div>
+                <div class="goal-card" data-value="advanced">
+                    <span class="goal-icon">🚀</span>
+                    <div class="goal-text">ตะลุยโจทย์<br>ขั้นสูง</div>
+                </div>
+                <div class="goal-card" data-value="mock_exams">
+                    <span class="goal-icon">⏱️</span>
+                    <div class="goal-text">ฝึกทำข้อสอบ<br>จับเวลา</div>
                 </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label>เป้าหมายการเรียนรู้ของคุณคืออะไร?</label>
-                <div class="radio-grid">
-                     <label class="radio-item"><input type="radio" name="goal" value="fundamentals" checked> ปูพื้นฐานให้แน่น</label>
-                     <label class="radio-item"><input type="radio" name="goal" value="advanced"> ตะลุยโจทย์ขั้นสูง</label>
-                     <label class="radio-item"><input type="radio" name="goal" value="mock_exams"> ฝึกทำข้อสอบจับเวลา</label>
-                </div>
+        <button type="submit" class="cta-btn">
+            เริ่มต้นเส้นทางของฉัน
+            <span class="cta-arrow">→</span>
+        </button>
+
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-num">12,400+</div>
+                <div class="stat-lbl">นักเรียนที่ใช้งาน</div>
             </div>
+            <div class="stat-sep"></div>
+            <div class="stat-item">
+                <div class="stat-num">94%</div>
+                <div class="stat-lbl">อัตราผ่านสอบ</div>
+            </div>
+            <div class="stat-sep"></div>
+            <div class="stat-item">
+                <div class="stat-num">5 วิชา</div>
+                <div class="stat-lbl">ครอบคลุมทุกวิชา</div>
+            </div>
+        </div>
+    </div>
+  </form>
+ 
+  <script type="module">
+    import { auth, db } from './firebase-config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-            <button type="submit" class="btn-primary">เริ่มต้นเส้นทางของฉัน <i class="fas fa-arrow-right"></i></button>
-        </form>
-    </main>
+    let currentUser = null;
 
-    <script type="module">
-        // --- Firebase Imports ---
-        import { auth, db } from './firebase-config.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+        } else {
+            console.log("No user logged in, redirecting to login.html");
+            window.location.href = 'login.html';
+        }
+    });
 
-        let currentUser = null;
+    // --- Interactive UI Listeners ---
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => chip.classList.toggle('active'));
+    });
 
-        // --- Auth State Management ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user; // Keep user object in memory
-            } else {
-                // If no user, redirect to login
-                window.location.href = 'login.html';
-            }
+    document.querySelectorAll('.goal-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
         });
+    });
 
-        // --- Form Submission Logic ---
-        document.getElementById('survey-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+    // --- Form Submission Logic ---
+    document.getElementById('survey-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            if (!currentUser) {
-                alert("เกิดข้อผิดพลาด: ไม่พบข้อมูลผู้ใช้ โปรดล็อกอินอีกครั้ง");
-                window.location.href = 'login.html';
-                return;
-            }
+        if (!currentUser) {
+            alert("เกิดข้อผิดพลาด: ไม่พบข้อมูลผู้ใช้ โปรดล็อกอินอีกครั้ง");
+            window.location.href = 'login.html';
+            return;
+        }
 
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.innerHTML = 'กำลังบันทึกข้อมูล...';
+        const submitButton = e.target.querySelector('.cta-btn');
+        const originalButtonHTML = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.textContent = 'กำลังสร้างเส้นทาง...';
 
-            // 1. Get data from the form
-            const targetUniversity = document.getElementById('target-university').value;
-            const selectedSubjects = [...document.querySelectorAll('input[name="subjects"]:checked')].map(el => el.value);
-            const learningGoal = document.querySelector('input[name="goal"]:checked').value;
-            
-            // 2. Structure the data for Firestore
-            const userProfileData = {
-                targetUniversity: targetUniversity,
-                focusedSubjects: selectedSubjects,
-                learningGoal: learningGoal,
-                surveyCompleted: true,
-                createdAt: serverTimestamp() // Add a timestamp for when the survey was completed
-            };
+        const targetUniversity = document.getElementById('target-university').value.trim();
+        const selectedSubjects = [...document.querySelectorAll('.chip.active')].map(el => el.dataset.value);
+        const learningGoal = document.querySelector('.goal-card.active')?.dataset.value;
 
-            try {
-                // 3. Save data to Firestore using the user's UID as the document ID
-                const userDocRef = doc(db, "userProfiles", currentUser.uid);
-                await setDoc(userDocRef, userProfileData, { merge: true }); // Use merge:true to be safe
+        if (!targetUniversity || selectedSubjects.length === 0 || !learningGoal) {
+            alert("กรุณากรอกข้อมูลให้ครบทุกส่วนก่อนนะครับ");
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonHTML;
+            return;
+        }
 
-                console.log("User profile data saved successfully!");
+        const userProfileData = {
+            targetUniversity: targetUniversity,
+            focusedSubjects: selectedSubjects,
+            learningGoal: learningGoal,
+            surveyCompleted: true,
+            profileCreatedAt: serverTimestamp()
+        };
 
-                // 4. Redirect to the main dashboard
-                window.location.href = 'home.html';
-
-            } catch (error) {
-                console.error("Error saving user profile: ", error);
-                alert(`เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`);
-                // Re-enable the button if there was an error
-                submitButton.disabled = false;
-                submitButton.innerHTML = 'เริ่มต้นเส้นทางของฉัน <i class="fas fa-arrow-right"></i>';
-            }
-        });
-    </script>
+        try {
+            const userDocRef = doc(db, "userProfiles", currentUser.uid);
+            await setDoc(userDocRef, userProfileData, { merge: true });
+            console.log("User profile data saved successfully!");
+            window.location.href = 'home.html';
+        } catch (error) {
+            console.error("Error saving user profile: ", error);
+            alert(`เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`);
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonHTML;
+        }
+    });
+  </script>
 </body>
 </html>

@@ -3,26 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-PATH | แบบสอบถาม</title>
-    <link rel="stylesheet" href="style.css"> 
-    <link rel="stylesheet" href="survey.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>DE-PATH | สร้างเส้นทางของคุณ</title>
+    <link rel="stylesheet" href="/survey.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h3>ยินดีต้อนรับสู่ DE-PATH!</h3>
-        </div>
-        <div class="chat-log" id="chat-log">
-            <!-- Messages will be injected here by JavaScript -->
-        </div>
-        <div class="chat-options" id="chat-options">
-            <!-- Options will be injected here by JavaScript -->
-        </div>
+    <div class="survey-container">
+        <header class="survey-header">
+            <h1>DE-PATH</h1>
+            <p>กรุณาตอบแบบสอบถามสั้นๆ เพื่อให้เราสร้างเส้นทางสู่คณะวิศวะฯ ที่ใช่สำหรับคุณ</p>
+        </header>
+
+        <form id="survey-form">
+            <!-- กล่องคำถามที่ 1 -->
+            <div class="form-group">
+                <label for="target-university" class="question-label">เป้าหมายคณะ/มหาวิทยาลัยของคุณคืออะไร?</label>
+                <input type="text" id="target-university" class="input-field" placeholder="เช่น วิศวะคอมฯ จุฬาฯ, วิศวะเครื่องกล บางมด" required>
+            </div>
+
+            <!-- กล่องคำถามที่ 2 -->
+            <div class="form-group">
+                <label class="question-label">คุณเน้นวิชาไหนเป็นพิเศษ? (เลือกได้มากกว่า 1 ข้อ)</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="Math1"> A-Level Math 1</label>
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="TPAT3"> TPAT 3</label>
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="Physics"> A-Level Physics</label>
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="Chemistry"> A-Level Chemistry</label>
+                    <label class="checkbox-item"><input type="checkbox" name="subjects" value="English"> A-Level English</label>
+                </div>
+            </div>
+
+            <!-- กล่องคำถามที่ 3 -->
+            <div class="form-group">
+                <label class="question-label">เป้าหมายการเรียนรู้ของคุณคืออะไร?</label>
+                <div class="radio-group">
+                     <label class="radio-item"><input type="radio" name="learningGoal" value="fundamentals" checked> ปูพื้นฐานให้แน่น</label>
+                     <label class="radio-item"><input type="radio" name="learningGoal" value="advanced"> ตะลุยโจทย์ขั้นสูง</label>
+                     <label class="radio-item"><input type="radio" name="learningGoal" value="mock_exams"> ฝึกทำข้อสอบจับเวลา</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">เริ่มต้นเส้นทางของฉัน <i class="fas fa-arrow-right"></i></button>
+        </form>
     </div>
 
-    <script src="survey.js"></script>
+    <!-- Firebase & Form Submission Logic -->
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+            } else {
+                // ถ้าไม่มี user ในระบบ ให้เด้งไปหน้า login
+                console.log("No user logged in, redirecting to login.html");
+                window.location.href = 'login.html';
+            }
+        });
+
+        document.getElementById('survey-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!currentUser) {
+                alert("เกิดข้อผิดพลาด: ไม่พบข้อมูลผู้ใช้ โปรดล็อกอินอีกครั้ง");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.innerHTML = 'กำลังสร้างเส้นทาง...';
+
+            // 1. ดึงข้อมูลจากฟอร์ม
+            const targetUniversity = document.getElementById('target-university').value;
+            const selectedSubjects = [...document.querySelectorAll('input[name="subjects"]:checked')].map(el => el.value);
+            const learningGoal = document.querySelector('input[name="learningGoal"]:checked').value;
+
+            if (selectedSubjects.length === 0) {
+                alert("กรุณาเลือกวิชาที่เน้นอย่างน้อย 1 วิชา");
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'เริ่มต้นเส้นทางของฉัน <i class="fas fa-arrow-right"></i>';
+                return;
+            }
+
+            // 2. จัดโครงสร้างข้อมูลสำหรับ Firestore
+            const userProfileData = {
+                targetUniversity: targetUniversity,
+                focusedSubjects: selectedSubjects,
+                learningGoal: learningGoal,
+                surveyCompleted: true,
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                // 3. บันทึกข้อมูลลง Firestore
+                const userDocRef = doc(db, "userProfiles", currentUser.uid);
+                await setDoc(userDocRef, userProfileData, { merge: true });
+
+                console.log("บันทึกข้อมูลสำเร็จ!");
+
+                // 4. พาไปยังหน้าหลัก
+                window.location.href = 'home.html';
+
+            } catch (error) {
+                console.error("Error saving user profile: ", error);
+                alert(`เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`);
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'เริ่มต้นเส้นทางของฉัน <i class="fas fa-arrow-right"></i>';
+            }
+        });
+    </script>
 </body>
 </html>
